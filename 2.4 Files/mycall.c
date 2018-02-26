@@ -7,39 +7,32 @@ By: Maurely Acosta and Tomas Ortega
 #include <linux/time.h>
 #include <linux/sched.h>  //to get current->pid
 
-void do_gettimeofday(struct timeval *tv);
-
-int offset = 0;
-int getMonth = 0;
-int getDay = 0;
-int getYear = 0; 
-
 asmlinkage long sys_mycall(int i, int j)
 {
-  
-  printk("Maurely Acosta and Tomas Ortega call from process %d with panther ID %d and %d.\n"
-	, current->pid,	i ,j  );
-
-  /* Code for displaying the current time*/
-  offset = -18000; // Time zone offset for Eastern Time Zone.  
-  
-  struct timeval totalsecs; // Total seconds elapsed
-
-  struct tm broken; // Calendar time in broken down format
-  	  
-
-  do_gettimeofday(&totalsecs);
-
-  time_to_tm(totalsecs.tv_sec, offset, &broken);
+	struct tm result;
+        struct timeval t;
+        int hour;
+        int min;
+        int sec;
+        int month;
+        int mday;
+        int year;
+        int offset;
 	
-  getMonth = broken.tm_mon;
-  getDay = broken.tm_mday;
-  getYear = broken.tm_year + 1900;  
+        printk("Maurely Acosta and Tomas Ortega called from process %d with panther ID: %d and %d.\n", current->pid, i, j);
 
-  printk("COP4610 %d:%d:%d, %d, %d, %d", broken.tm_hour, broken.tm_min, broken.tm_sec, 
-         getMonth, getDay, getYear);
+        do_gettimeofday(&t);
+        offset = -18000;
+        time_to_tm(t.tv_sec, offset, &result);
+        hour = result.tm_hour;
+        min = result.tm_min;
+        sec = result.tm_sec;
+        month = result.tm_mon + 1;
+        mday = result.tm_mday;
+        year = result.tm_year + 1900;
 
+        printk("COP4610 %d:%d:%d  %d, %d, %d \n", hour, min, sec, month, mday, year);
 
-  return 0;
+        return 0;
 
 }
